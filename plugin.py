@@ -22,6 +22,7 @@ class ApcUPSd:
 
         self.uBCHARGE = 1
         self.uSTATUS = 2
+        self.uTIMELEFT = 3
 
         if (Parameters["SerialPort"] == "1"):
             Domoticz.Debugging(1)
@@ -36,8 +37,9 @@ class ApcUPSd:
         self.TCP_IP = Parameters["Address"]
         self.TCP_PORT = Parameters["Port"]
 
-        if self.uBCHARGE not in Devices: Domoticz.Device(Unit=self.uBCHARGE, DeviceID="BCHARGE", Name="Battery charge", TypeName="Percentage", Used=1).Create()
-        if self.uSTATUS not in Devices: Domoticz.Device(Unit=self.uSTATUS, DeviceID="STATUS", Name="Status", Type=243, Subtype=22, Used=1).Create()
+        if self.uBCHARGE  not in Devices: Domoticz.Device(Unit=self.uBCHARGE,  DeviceID="BCHARGE",  Name="Battery charge", TypeName="Percentage", Used=1).Create()
+        if self.uSTATUS   not in Devices: Domoticz.Device(Unit=self.uSTATUS,   DeviceID="STATUS",   Name="Status", Type=243, Subtype=22, Used=1).Create()
+        if self.uTIMELEFT not in Devices: Domoticz.Device(Unit=self.uTIMELEFT, DeviceID="TIMELEFT", Name="Timeleft", Type=243, Subtype=33, Switchtype=3, Used=1).Create()
 
         return
 
@@ -45,6 +47,7 @@ class ApcUPSd:
         Domoticz.Debug("onHeartbeat called")
 
         Devices[self.uBCHARGE].Update(0, str(os.popen("apcaccess -h " + str(self.TCP_IP) + ":" + str(self.TCP_PORT) + " -p BCHARGE -u").read().strip()))
+        Devices[self.uTIMELEFT].Update(0, str(os.popen("apcaccess -h " + str(self.TCP_IP) + ":" + str(self.TCP_PORT) + " -p TIMELEFT -u").read().strip()))
 
         STATUS = str(os.popen("apcaccess -h " + str(self.TCP_IP) + ":" + str(self.TCP_PORT) + " -p STATUS -u").read().strip())
         vSTATUS = 4
